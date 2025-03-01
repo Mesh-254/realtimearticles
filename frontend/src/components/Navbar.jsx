@@ -8,7 +8,7 @@ const navLinks = [
   { id: "home", label: "Home", href: "/" },
   { id: "articles", label: "Articles", href: "/articles" },
   { id: "categories", label: "Categories", href: "/categories" },
-  { id: "authors", label: "Authors", href: "#authors" },
+  { id: "article", label: "Authors", href: "/article-detail" },
   { id: "about", label: "About", href: "#about" },
 ]
 
@@ -158,12 +158,12 @@ const Navbar = () => {
               <SearchIcon className="w-5 h-5" />
             </button>
             <a
-              href="#"
+              href="#newsletter"
               className={`rounded-lg font-medium uppercase tracking-wider transition-all duration-500 ${
                 isScrolled ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm"
               } ${
                 isScrolled
-                  ? "bg-primary text-white hover:bg-primary/90 shadow-sm hover:shadow-md"
+                  ? "bg-gray text-black hover:bg-primary/90 shadow-sm hover:shadow-md"
                   : "bg-white text-primary hover:bg-white/90"
               }`}
             >

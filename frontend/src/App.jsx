@@ -5,6 +5,7 @@ import Newsletter from "./components/Newsletter";
 import ArticleList from "./components/ArticleList";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Articles from "./components/Articles";
+import ArticleDetail from "./components/ArticleDetail";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           }
         />
         <Route path="/articles" element={<Articles />} />
+        <Route path="/article-detail" element={<ArticleDetail/>} />
       </Routes>
       <Footer />
     </BrowserRouter>
