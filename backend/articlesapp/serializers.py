@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Article, Category, Subscriber, Tag, User
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for the User model.
 
@@ -10,7 +10,9 @@ class UserSerializer(serializers.ModelSerializer):
     into JSON format and handling user-related API requests.
     """
 
-    articles = serializers.PrimaryKeyRelatedField(many=True, queryset=Article.objects.all())
+    articles = serializers.HyperlinkedRelatedField(
+        many=True, queryset=Article.objects.all(), view_name='article-detail')
+
     class Meta:
         model = User
         fields = ['id', 'email', 'first_name',
@@ -23,7 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
         # - last_name: The user's last name
 
 
-class SubscriberSerializer(serializers.ModelSerializer):
+class SubscriberSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for the Subscriber model.
 
@@ -35,16 +37,24 @@ class SubscriberSerializer(serializers.ModelSerializer):
         fields = "__all__"  # Includes all fields from the Subscriber model
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for the Category model.
 
     This serializer is responsible for converting Category model instances 
     into JSON format and handling category-related API requests.
     """
+    articles = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name="article-detail", lookup_field="slug")
+
     class Meta:
         model = Category
-        fields = ['id', 'name', 'slug', 'image', 'description']
+        fields = ['id', 'name', 'slug', 'image', 'description', 'articles']
+
+        extra_kwargs = {
+            # Use 'slug' instead of 'id' in URLs
+            'url': {'lookup_field': 'slug'}
+        }
         # Fields included:
         # - id: Unique identifier for the category
         # - name: Name of the category
@@ -53,14 +63,14 @@ class CategorySerializer(serializers.ModelSerializer):
         # - description: Brief description of the category
 
 
-class TagSerializer(serializers.ModelSerializer):
+class TagSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer for the Tag model"""
     class Meta:
         model = Tag
         fields = ["id", "name"]
 
 
-class ArticleSerializer(serializers.ModelSerializer):
+class ArticleSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for the Article model.
 
@@ -68,6 +78,10 @@ class ArticleSerializer(serializers.ModelSerializer):
     and facilitates API interactions for article-related operations.
     """
     author = serializers.ReadOnlyField(source='author.first_name')
+    category = serializers.SlugRelatedField(
+        queryset=Category.objects.all(), slug_field='slug')
+    tags = serializers.SlugRelatedField(
+        many=True, queryset=Tag.objects.all(), slug_field='name')
 
     class Meta:
         model = Article
@@ -75,6 +89,12 @@ class ArticleSerializer(serializers.ModelSerializer):
             'id', 'title', 'slug', 'excerpt', 'content', 'date_published',
             'author', 'category', 'image', 'tags', 'is_featured'
         ]
+
+        extra_kwargs = {
+            # Use 'slug' instead of 'id' in URLs
+            'url': {'lookup_field': 'slug'}
+        }
+
         # Fields included:
         # - id: Unique identifier for the article
         # - title: The title of the article

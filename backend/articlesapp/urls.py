@@ -1,13 +1,15 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from . import views
+from articlesapp import views
 
+# Create a router and register our ViewSets with it.
+router = DefaultRouter()
+router.register(r'users', views.UserViewSet, basename='user')
+router.register(r'tags', views.TagViewSet, basename='tag')
+router.register(r'categories', views.CategoryViewSet, basename='category')
+router.register(r'articles', views.ArticleViewSet, basename='article')
+
+# The API URLs are now determined automatically by the router.
 urlpatterns = [
-    path('users/', views.UserList.as_view(), name='user-list'),
-    path('users/<int:pk>/', views.UserDetail.as_view(), name='user-detail'),
-    path('tags/', view=views.TagList.as_view(), name='tag-list'),
-    path('tags/<uuid:pk>/', view=views.TagDetail.as_view(), name='tag-detail'),
-    path('articles/', views.ArticleList.as_view(), name='article-list'),
-    path('articles/<uuid:pk>/', views.ArticleDetail.as_view(), name='article-detail'),
-
+    path('', include(router.urls)),
 ]
