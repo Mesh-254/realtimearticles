@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { MenuIcon, XIcon, SearchIcon } from "./Icons"
+import { Link } from "react-router-dom"
 
 const navLinks = [
-  { id: "home", label: "Home", href: "#" },
-  { id: "articles", label: "Articles", href: "#articles" },
-  { id: "categories", label: "Categories", href: "#categories" },
+  { id: "home", label: "Home", href: "/" },
+  { id: "articles", label: "Articles", href: "/articles" },
+  { id: "categories", label: "Categories", href: "/categories" },
   { id: "authors", label: "Authors", href: "#authors" },
   { id: "about", label: "About", href: "#about" },
 ]
@@ -29,6 +30,28 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+    // Function to close menu when clicking outside
+    const handleClickOutside = (event) => {
+      // Get the navbar element
+      const navbar = document.getElementById("mobile-menu-container")
+      // If the menu is open and the click is outside the navbar
+      if (isMenuOpen && navbar && !navbar.contains(event.target)) {
+        setIsMenuOpen(false)
+      }
+    }
+
+    // Add event listener when menu is open
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    // Clean up the event listener
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isMenuOpen])
+
   const handleNavClick = (id) => {
     setActiveLink(id)
     setIsMenuOpen(false)
@@ -45,7 +68,7 @@ const Navbar = () => {
       className={`sticky top-0 z-50 transition-all duration-500 ${
         isScrolled
           ? "bg-white/95 backdrop-blur-md shadow-md"
-          : "bg-[url('./assets/jigsaw.jpg')] bg-cover bg-center before:absolute before:inset-0 before:bg-gradient-to-b before:from-black/70 before:to-black/50"
+          : "bg-[url('./assets/jigsaw.jpg')] bg-cover bg-center before:absolute before:inset-0 before:bg-gradient-to-b before:from-black/30 before:to-black/50"
       }`}
     >
       {/* Top Section with Logo */}
@@ -73,32 +96,56 @@ const Navbar = () => {
               isScrolled ? "space-x-6" : "space-x-8"
             }`}
           >
-            {navLinks.map((link) => (
-              <a
-                key={link.id}
-                href={link.href}
-                onClick={(e) => {
-                  e.preventDefault()
-                  handleNavClick(link.id)
-                }}
-                className={`relative uppercase tracking-wider transition-all duration-500  ${
-                  isScrolled ? "py-1 text-sm font-medium" : "py-1.5 text-sm font-medium"
-                }
-                  ${
-                    isScrolled
-                      ? activeLink === link.id
-                        ? "text-primary"
-                        : "text-gray-800 hover:text-primary"
-                      : activeLink === link.id
-                        ? "text-white"
-                        : "text-white/90 hover:text-white"
-                  }
-                  after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-current 
-                  after:transition-all ${activeLink === link.id ? "after:w-full" : "hover:after:w-full"}`}
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) =>
+              link.href.startsWith("#") ? (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    const element = document.querySelector(link.href)
+                    if (element) {
+                      element.scrollIntoView({ behavior: "smooth" })
+                    }
+                  }}
+                  className={`relative uppercase tracking-wider transition-all duration-500 
+        ${isScrolled ? "py-1 text-sm font-medium" : "py-1.5 text-sm font-medium"} 
+        ${
+          isScrolled
+            ? activeLink === link.id
+              ? "text-primary"
+              : "text-gray-800 hover:text-primary"
+            : activeLink === link.id
+              ? "text-white"
+              : "text-white/90 hover:text-white"
+        } 
+        after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-current 
+        after:transition-all ${activeLink === link.id ? "after:w-full" : "hover:after:w-full"}`}
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.id}
+                  to={link.href}
+                  className={`relative uppercase tracking-wider transition-all duration-500 
+        ${isScrolled ? "py-1 text-sm font-medium" : "py-1.5 text-sm font-medium"} 
+        ${
+          isScrolled
+            ? activeLink === link.id
+              ? "text-primary"
+              : "text-gray-800 hover:text-primary"
+            : activeLink === link.id
+              ? "text-white"
+              : "text-white/90 hover:text-white"
+        } 
+        after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-current 
+        after:transition-all ${activeLink === link.id ? "after:w-full" : "hover:after:w-full"}`}
+                >
+                  {link.label}
+                </Link>
+              ),
+            )}
           </nav>
 
           {/* Search and CTA - Desktop */}
@@ -139,27 +186,45 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       <div
+        id="mobile-menu-container"
         className={`md:hidden bg-white shadow-lg transition-all duration-300 overflow-hidden relative z-10 ${
           isMenuOpen ? "max-h-96" : "max-h-0"
         }`}
       >
         <div className="container-custom py-4 space-y-4">
           <nav className="flex flex-col space-y-4">
-            {navLinks.map((link) => (
-              <a
-                key={link.id}
-                href={link.href}
-                onClick={(e) => {
-                  e.preventDefault()
-                  handleNavClick(link.id)
-                }}
-                className={`py-3 text-base uppercase tracking-wider font-medium transition-colors ${
-                  activeLink === link.id ? "text-primary font-semibold" : "text-gray-700 hover:text-primary"
-                }`}
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) =>
+              link.href.startsWith("#") ? (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setIsMenuOpen(false)
+                    const element = document.querySelector(link.href)
+                    if (element) {
+                      element.scrollIntoView({ behavior: "smooth" })
+                    }
+                  }}
+                  className={`py-3 text-base uppercase tracking-wider font-medium transition-colors ${
+                    activeLink === link.id ? "text-primary font-semibold" : "text-gray-700 hover:text-primary"
+                  }`}
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.id}
+                  to={link.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`py-3 text-base uppercase tracking-wider font-medium transition-colors ${
+                    activeLink === link.id ? "text-primary font-semibold" : "text-gray-700 hover:text-primary"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ),
+            )}
           </nav>
           <div className="flex items-center justify-between pt-4 border-t border-gray-100">
             <button className="p-2 text-gray-500 hover:text-primary transition-colors">

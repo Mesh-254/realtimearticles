@@ -1,29 +1,29 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import HeroSection from "./components/HeroSection";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import CategoryFilter from "./components/CategoryFilter";
-import FeaturedArticles from "./components/FeaturedArticles";
-import AuthorSpotlight from "./components/AuthorSpotlight";
 import Newsletter from "./components/Newsletter";
-
+import ArticleList from "./components/ArticleList";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Articles from "./components/Articles";
 
 function App() {
   return (
-    <div>
+    <BrowserRouter>
       <Navbar />
-      <main>
-        <HeroSection />
-        <CategoryFilter />
-        <FeaturedArticles />
-        <AuthorSpotlight />
-        <Newsletter />
-      </main>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <ArticleList />
+              <Newsletter />
+            </>
+          }
+        />
+        <Route path="/articles" element={<Articles />} />
+      </Routes>
       <Footer />
-    </div>
+    </BrowserRouter>
   );
 }
 
